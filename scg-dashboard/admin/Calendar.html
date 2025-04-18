@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Work Calendar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-100 font-sans p-4">
+  <!-- Header -->
+  <div class="bg-red-600 text-white p-4 rounded-t-2xl flex justify-between items-center max-w-4xl mx-auto">
+    <div class="text-xl font-bold flex items-center">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/SCG_Logo.svg/512px-SCG_Logo.svg.png"
+        class="h-8 mr-2" alt="SCG Logo"/>
+      SCG Work Calendar
+    </div>
+    <div class="text-white text-2xl">☰</div>
+  </div>
+
+  <!-- Calendar Container -->
+  <div class="bg-white rounded-b-2xl shadow-xl max-w-4xl mx-auto p-6">
+    <h2 class="text-xl font-bold text-center mb-4">ปฏิทินการทำงาน เดือนเมษายน</h2>
+
+    <!-- Legend -->
+    <div class="flex justify-center space-x-4 mb-4 text-sm">
+      <div class="flex items-center">
+        <span class="inline-block w-4 h-4 bg-green-500 mr-1 rounded"></span> มาทำงานปกติ
+      </div>
+      <div class="flex items-center">
+        <span class="inline-block w-4 h-4 bg-yellow-300 mr-1 rounded"></span> ทำเกินเวลาแต่ไม่ได้ขอ OT
+      </div>
+      <div class="flex items-center">
+        <span class="inline-block w-4 h-4 bg-blue-400 mr-1 rounded"></span> OT
+      </div>
+      <div class="flex items-center">
+        <span class="inline-block w-4 h-4 bg-red-500 mr-1 rounded"></span> ขาดงาน
+      </div>
+      <div class="flex items-center">
+        <span class="inline-block w-4 h-4 bg-gray-300 mr-1 rounded"></span> วันหยุด
+      </div>
+    </div>
+
+    <!-- Weekday headings -->
+    <div class="grid grid-cols-7 gap-2 text-center font-medium mb-2">
+      <div>อา</div>
+      <div>จ</div>
+      <div>อ</div>
+      <div>พ</div>
+      <div>พฤ</div>
+      <div>ศ</div>
+      <div>ส</div>
+    </div>
+
+    <!-- Calendar days -->
+    <div class="grid grid-cols-7 gap-2 text-center">
+      <!-- ตัวอย่าง : 1-30 -->
+      <div
+        class="bg-gray-300 p-2 rounded text-white cursor-pointer"
+        onclick="showTimeline('2025-04-01','วันหยุด')"
+      >
+        1
+      </div>
+      <div
+        class="bg-green-500 p-2 rounded text-white cursor-pointer"
+        onclick="showTimeline('2025-04-02','มาทำงานปกติ')"
+      >
+        2
+      </div>
+      <div
+        class="bg-yellow-300 p-2 rounded text-white cursor-pointer"
+        onclick="showTimeline('2025-04-03','ทำเกินเวลาแต่ไม่ได้ขอOT')"
+      >
+        3
+      </div>
+      <div
+        class="bg-blue-400 p-2 rounded text-white cursor-pointer"
+        onclick="showTimeline('2025-04-04','OT')"
+      >
+        4
+      </div>
+      <div
+        class="bg-red-500 p-2 rounded text-white cursor-pointer"
+        onclick="showTimeline('2025-04-05','ขาดงาน')"
+      >
+        5
+      </div>
+      <div
+        class="bg-green-500 p-2 rounded text-white cursor-pointer"
+        onclick="showTimeline('2025-04-06','ปกติ')"
+      >
+        6
+      </div>
+      <div
+        class="bg-gray-300 p-2 rounded text-white cursor-pointer"
+        onclick="showTimeline('2025-04-07','วันหยุด')"
+      >
+        7
+      </div>
+      <!-- ... แสดงต่อจนครบ 30 วัน -->
+    </div>
+  </div>
+
+  <!-- Timeline Modal -->
+  <div id="timelineModal"
+       class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded shadow p-4 max-w-lg w-full">
+      <div class="flex justify-between items-center mb-2">
+        <h3 id="modalDate" class="text-lg font-bold text-red-600"></h3>
+        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">X</button>
+      </div>
+      <p id="modalStatus" class="text-sm text-gray-600 mb-4"></p>
+      <div class="overflow-auto max-h-60">
+        <!-- ตารางหรือ timeline ประจำวัน -->
+        <table class="table-fixed w-full text-xs border-collapse text-center">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="border p-1 w-16">เวลา</th>
+              <th class="border p-1">รายละเอียด</th>
+            </tr>
+          </thead>
+          <tbody id="timelineTable">
+            <!-- ตัวอย่าง Row -->
+            <!-- สุดท้ายจะใช้ JS ฝั่งหน้าเว็บหรือ React map ข้อมูลเวลาจริง -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showTimeline(date, status) {
+        function getDayBgColor(day) {
+  if (day > todayDate) {
+    return 'bg-gray-300 text-white';
+  }
+  // day <= today → ไปหาใน DB
+  // สมมุติ attendance[day].status
+  switch(attendance[day].status) {
+    case 'NORMAL': return 'bg-green-500 text-white';
+    case 'OVERTIME_NO_REQUEST': return 'bg-yellow-300 text-white';
+    case 'OT_APPROVED': return 'bg-blue-400 text-white';
+    case 'ABSENT': return 'bg-red-500 text-white';
+    default: return 'bg-gray-300 text-white';
+  }
+}
+
+      document.getElementById('timelineModal').classList.remove('hidden');
+      document.getElementById('timelineModal').classList.add('flex');
+
+      document.getElementById('modalDate').textContent = `วันที่: ${date}`;
+      document.getElementById('modalStatus').textContent = `สถานะ: ${status}`;
+
+      // ตัวอย่าง timeline mock
+      const times = [
+        { time: '07:00 - 12:00', desc: 'เข้างานปกติ' },
+        { time: '12:00 - 13:00', desc: 'พัก' },
+        { time: '13:00 - 17:00', desc: 'ทำงานต่อ' },
+        { time: '18:00 - 20:00', desc: 'OT' }
+      ];
+      let html = '';
+      times.forEach(t => {
+        html += `
+          <tr>
+            <td class="border p-1">${t.time}</td>
+            <td class="border p-1">${t.desc}</td>
+          </tr>
+        `;
+      });
+      document.getElementById('timelineTable').innerHTML = html;
+    }
+
+    function closeModal() {
+      document.getElementById('timelineModal').classList.add('hidden');
+      document.getElementById('timelineModal').classList.remove('flex');
+    }
+  </script>
+</body>
+</html>

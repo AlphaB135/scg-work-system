@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>SCG Finance Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+  <!-- Sidebar -->
+  <aside class="bg-red-600 text-white w-64 p-6 fixed h-full">
+    <div class="mb-6">
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/SCG_Logo.svg/512px-SCG_Logo.svg.png"
+        alt="SCG Logo"
+        class="w-20 mb-4"
+      />
+      <h1 class="text-xl font-semibold">SCG Admin</h1>
+      <p class="text-sm text-white/80">Finance Dashboard</p>
+    </div>
+    <nav class="space-y-2">
+      <a href="#" class="block py-2 hover:opacity-80">ภาพรวม</a>
+      <a href="#" class="block py-2 hover:opacity-80">จัดการพนักงาน</a>
+      <a href="#" class="block py-2 hover:opacity-80">การเงิน</a>
+      <button class="bg-white text-red-600 font-bold py-2 px-4 rounded hover:bg-gray-200 w-full mt-4">
+        Logout
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="ml-64 p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">ภาพรวมการเงิน</h2>
+
+    <!-- Cards Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white shadow p-4 rounded-xl">
+        <p class="text-sm text-gray-600">ยังไม่กรอกประกันสังคม</p>
+        <h3 class="text-2xl font-bold text-red-600 mt-2">15 คน</h3>
+        <p class="text-xs text-gray-500 mt-1">(ต้องส่งก่อนสิ้นเดือน)</p>
+      </div>
+      <div class="bg-white shadow p-4 rounded-xl">
+        <p class="text-sm text-gray-600">ยังไม่ยื่นภาษี</p>
+        <h3 class="text-2xl font-bold text-red-600 mt-2">9 คน</h3>
+        <p class="text-xs text-gray-500 mt-1">(ครบกำหนด 15 เม.ย.)</p>
+      </div>
+      <div class="bg-white shadow p-4 rounded-xl">
+        <p class="text-sm text-gray-600">รวมพนักงานทั้งหมด</p>
+        <h3 class="text-2xl font-bold text-red-600 mt-2">120 คน</h3>
+        <p class="text-xs text-gray-500 mt-1">ประจำ + ชั่วคราว</p>
+      </div>
+    </div>
+
+    <!-- Table of employees -->
+    <div class="bg-white shadow rounded-xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-lg font-bold text-gray-700">สถานะภาษี/ประกันสังคม</h3>
+        <button class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+          Auto-fill ทั้งหมด
+        </button>
+      </div>
+      <div class="overflow-auto">
+        <table class="w-full border-collapse text-sm text-center">
+          <thead class="bg-gray-100 text-gray-600">
+            <tr>
+              <th class="p-2 border">รหัส</th>
+              <th class="p-2 border">ชื่อ</th>
+              <th class="p-2 border">ภาษี (Tax)</th>
+              <th class="p-2 border">ประกันสังคม (SSO)</th>
+              <th class="p-2 border">ตัวเลือก</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- ตัวอย่าง row -->
+            <tr class="hover:bg-gray-50">
+              <td class="border p-2">EMP001</td>
+              <td class="border p-2 text-left">สมชาย ทดสอบ</td>
+              <td class="border p-2">
+                <span class="inline-block bg-red-200 text-red-700 px-2 py-1 rounded-full text-xs">
+                  ยังไม่ได้ยื่น
+                </span>
+              </td>
+              <td class="border p-2">
+                <span class="inline-block bg-red-

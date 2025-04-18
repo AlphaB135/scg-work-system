@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: white;  /* ✅ แก้สีพื้นหลังกลับเป็นปกติ */
+  color: black;              /* ✅ ฟอนต์กลับมาเข้มปกติ */
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  width: 100%;
+}

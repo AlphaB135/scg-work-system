@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>SCG Notification Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen">
+  <!-- Sidebar -->
+  <aside class="bg-red-600 text-white w-64 p-6 fixed h-full">
+    <div class="mb-6">
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/SCG_Logo.svg/512px-SCG_Logo.svg.png"
+        alt="SCG Logo"
+        class="w-20 mb-4"
+      />
+      <h1 class="text-xl font-semibold">SCG Admin</h1>
+      <p class="text-sm text-white/80">Notification Management</p>
+    </div>
+    <nav class="space-y-2">
+      <a href="#" class="block py-2 hover:opacity-80">Dashboard</a>
+      <a href="#" class="block py-2 hover:opacity-80">พนักงาน</a>
+      <a href="#" class="block py-2 hover:opacity-80">การเงิน</a>
+      <a href="#" class="block py-2 hover:opacity-80 font-bold">แจ้งเตือน</a>
+      <button class="bg-white text-red-600 font-bold py-2 px-4 rounded hover:bg-gray-200 w-full mt-4">
+        Logout
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="ml-64 p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">จัดการแจ้งเตือน (Notifications)</h2>
+
+    <!-- ส่วนที่ 1: Fixed Reminders -->
+    <div class="bg-white shadow p-4 rounded-xl mb-6">
+      <h3 class="text-lg font-bold text-gray-700 mb-4">Fixed Reminders (แจ้งประจำ)</h3>
+      <!-- ตัวอย่างตาราง: อาจรับค่า notifyBeforeDays, timesPerDay -->
+      <div class="overflow-auto">
+        <table class="table-fixed w-full text-sm text-center border-collapse mb-4">
+          <thead class="bg-gray-100 text-gray-600">
+            <tr>
+              <th class="border p-2">หัวข้อ</th>
+              <th class="border p-2">รายละเอียด</th>
+              <th class="border p-2">วันที่/วันของเดือน</th>
+              <th class="border p-2">ล่วงหน้ากี่วัน</th>
+              <th class="border p-2">แจ้งกี่ครั้ง/วัน</th>
+              <th class="border p-2">กลุ่มเป้าหมาย</th>
+              <th class="border p-2">ตัวเลือก</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- ตัวอย่าง data -->
+            <tr class="hover:bg-gray-50">
+              <td class="border p-2 font-bold text-red-600">เตือนยื่นภาษี</td>
+              <td class="border p-2 text-left">ทุกเดือนก่อน 15 เม.ย.</td>
+              <td class="border p-2">15 (ของทุกเดือน)</td>
+              <td class="border p-2">3 วัน</td>
+              <td class="border p-2">3 ครั้ง (เช้า/บ่าย/เย็น)</td>
+              <td class="border p-2">ALL</td>
+              <td class="border p-2">
+                <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600">
+                  แก้ไข
+                </button>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="border p-2 font-bold text-red-600">เตือนส่ง SCB</td>
+              <td class="border p-2 text-left">ปิดงวดทุก 20</td>
+              <td class="border p-2">20 (ของทุกเดือน)</td>
+              <td class="border p-2">2 วัน</td>
+              <td class="border p-2">1 ครั้ง (เช้า)</td>
+              <td class="border p-2">ALL</td>
+              <td class="border p-2">
+                <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600">
+                  แก้ไข
+                </button>
+              </td>
+            </tr>
+            <!-- ... loop ... -->
+          </tbody>
+        </table>
+      </div>
+      <button class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm">
+        เพิ่ม Fixed Reminder
+      </button>
+    </div>
+
+    <!-- ส่วนที่ 2: Custom Reminders -->
+    <div class="bg-white shadow p-4 rounded-xl">
+      <h3 class="text-lg font-bold text-gray-700 mb-4">Custom Reminders (กำหนดเอง)</h3>
+
+      <!-- ฟอร์มเพิ่ม Custom Reminder (มีฟิลด์ notifyBeforeDays, timesPerDay) -->
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <!-- หัวข้อ -->
+        <input
+          type="text"
+          placeholder="หัวข้อแจ้งเตือน"
+          class="border rounded p-2 w-full"
+          required
+        />
+        <!-- วันที่ -->
+        <input
+          type="date"
+          class="border rounded p-2 w-full"
+          required
+        />
+        <!-- รายละเอียด -->
+        <textarea
+          placeholder="รายละเอียด"
+          class="border rounded p-2 w-full md:col-span-2 h-20"
+        ></textarea>
+        <!-- ล่วงหน้ากี่วัน -->
+        <input
+          type="number"
+          min="0"
+          placeholder="ล่วงหน้ากี่วัน"
+          class="border rounded p-2 w-full"
+        />
+        <!-- แจ้งกี่ครั้งต่อวัน -->
+        <select class="border rounded p-2 w-full">
+          <option value="">แจ้งกี่ครั้ง/วัน</option>
+          <option value="1">1 ครั้ง</option>
+          <option value="2">2 ครั้ง</option>
+          <option value="3">3 ครั้ง</option>
+        </select>
+        <!-- กลุ่มเป้าหมาย -->
+        <select class="border rounded p-2 w-full">
+          <option value="">ส่งให้ใคร?</option>
+          <option value="ALL">ALL</option>
+          <option value="ADMIN">ADMIN</option>
+          <option value="EMPLOYEE">EMPLOYEE</option>
+          <option value="SUPERVISOR">SUPERVISOR</option>
+        </select>
+
+        <button class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 w-fit md:col-span-2">
+          เพิ่ม Custom Reminder
+        </button>
+      </form>
+
+      <!-- ตารางแสดง Custom Reminders -->
+      <div class="overflow-auto">
+        <table class="table-fixed w-full text-sm text-center border-collapse">
+          <thead class="bg-gray-100 text-gray-600">
+            <tr>
+              <th class="border p-2 w-32">หัวข้อ</th>
+              <th class="border p-2">รายละเอียด</th>
+              <th class="border p-2 w-28">วันที่</th>
+              <th class="border p-2 w-24">ล่วงหน้า</th>
+              <th class="border p-2 w-24">แจ้ง/วัน</th>
+              <th class="border p-2 w-24">ผู้รับ</th>
+              <th class="border p-2 w-32">ตัวเลือก</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- ตัวอย่าง data -->
+            <tr class="hover:bg-gray-50">
+              <td class="border p-2 font-bold text-red-600">เรียกเก็บ Uniform</td>
+              <td class="border p-2 text-left">แจ้งสำหรับพนักงานในแผนก...</td>
+              <td class="border p-2">2025-04-30</td>
+              <td class="border p-2">3 วัน</td>
+              <td class="border p-2">2 ครั้ง</td>
+              <td class="border p-2">EMPLOYEE</td>
+              <td class="border p-2 space-x-2">
+                <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600">
+                  แก้ไข
+                </button>
+                <button class="bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-400">
+                  ลบ
+                </button>
+              </td>
+            </tr>
+            <!-- ... loop ... -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

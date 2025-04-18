@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SCG Work Calendar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4">
+  <div class="bg-white rounded-2xl shadow-xl max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="bg-red-600 text-white p-4 rounded-t-2xl flex justify-between items-center">
+      <div class="text-xl font-bold flex items-center">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/29/SCG_logo.svg" class="h-8 mr-2" alt="SCG Logo"/>
+        SCG
+      </div>
+      <div class="text-white text-2xl">☰</div>
+    </div>
+
+    <!-- Title -->
+    <div class="p-6">
+      <h2 class="text-center text-xl font-bold mb-4">ตารางการทำงาน เดือนเมษายน</h2>
+
+      <!-- Weekdays -->
+      <div class="grid grid-cols-7 gap-2 text-center font-medium mb-2">
+        <div>วันอาทิตย์</div>
+        <div>วันจันทร์</div>
+        <div>วันอังคาร</div>
+        <div>วันพุธ</div>
+        <div>วันพฤหัส</div>
+        <div>วันศุกร์</div>
+        <div>วันเสาร์</div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="grid grid-cols-7 gap-2 text-center">
+        <!-- ตัวอย่าง 30 วัน -->
+        <div class="bg-gray-300 p-2 rounded text-white">31</div>
+        <div class="bg-green-500 p-2 rounded text-white">1</div>
+        <div class="bg-green-500 p-2 rounded text-white">2</div>
+        <div class="bg-green-500 p-2 rounded text-white">3</div>
+        <div class="bg-green-500 p-2 rounded text-white">4</div>
+        <div class="bg-blue-500 p-2 rounded text-white">5</div>
+        <div class="bg-gray-300 p-2 rounded text-white">6</div>
+        
+        <div class="bg-gray-300 p-2 rounded text-white">7</div>
+        <div class="bg-green-500 p-2 rounded text-white">8</div>
+        <div class="bg-green-500 p-2 rounded text-white">9</div>
+        <div class="bg-green-500 p-2 rounded text-white">10</div>
+        <div class="bg-green-500 p-2 rounded text-white">11</div>
+        <div class="bg-blue-500 p-2 rounded text-white">12</div>
+        <div class="bg-blue-500 p-2 rounded text-white">13</div>
+
+        <div class="bg-gray-300 p-2 rounded text-white">14</div>
+        <div class="bg-green-500 p-2 rounded text-white">15</div>
+        <div class="bg-green-500 p-2 rounded text-white">16</div>
+        <div class="bg-green-500 p-2 rounded text-white">17</div>
+        <div class="bg-green-500 p-2 rounded text-white">18</div>
+        <div class="bg-red-500 p-2 rounded text-white">19</div>
+        <div class="bg-blue-500 p-2 rounded text-white">20</div>
+
+        <div class="bg-gray-300 p-2 rounded text-white">21</div>
+        <div class="bg-green-500 p-2 rounded text-white">22</div>
+        <div class="bg-green-500 p-2 rounded text-white">23</div>
+        <div class="bg-green-500 p-2 rounded text-white">24</div>
+        <div class="bg-green-500 p-2 rounded text-white">25</div>
+        <div class="bg-blue-500 p-2 rounded text-white">26</div>
+        <div class="bg-blue-500 p-2 rounded text-white">27</div>
+
+        <div class="bg-gray-300 p-2 rounded text-white">28</div>
+        <div class="bg-green-500 p-2 rounded text-white">29</div>
+        <div class="bg-green-500 p-2 rounded text-white">30</div>
+      </div>
+
+      <!-- Legend -->
+      <div class="mt-6 grid grid-cols-2 sm:grid-cols-5 gap-2 text-sm">
+        <div class="flex items-center"><div class="w-4 h-4 mr-2 rounded bg-blue-500"></div>OT</div>
+        <div class="flex items-center"><div class="w-4 h-4 mr-2 rounded bg-green-500"></div>มาทำงาน</div>
+        <div class="flex items-center"><div class="w-4 h-4 mr-2 rounded bg-red-500"></div>ขาดงาน</div>
+        <div class="flex items-center"><div class="w-4 h-4 mr-2 rounded bg-yellow-300"></div>รออนุมัติ OT</div>
+        <div class="flex items-center"><div class="w-4 h-4 mr-2 rounded bg-gray-300"></div>วันหยุด</div>
+      </div>
+
+
+    </div>
+
+    <!-- ตารางเวลากะการทำงาน -->
+<div class="mt-10 bg-white rounded-xl shadow p-6">
+  <h2 class="text-center text-lg font-bold mb-4">ตารางเวลากะการทำงาน</h2>
+
+  <div class="overflow-auto">
+    <table class="table-fixed border border-collapse w-full text-sm text-center">
+      <thead>
+        <tr>
+          <th class="border p-2 w-20">เวลา</th>
+          <th class="border p-2">วันอาทิตย์</th>
+          <th class="border p-2">วันจันทร์</th>
+          <th class="border p-2">วันอังคาร</th>
+          <th class="border p-2">วันพุธ</th>
+          <th class="border p-2">วันพฤหัส</th>
+          <th class="border p-2">วันศุกร์</th>
+          <th class="border p-2">วันเสาร์</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- สร้างเวลา 00:00 - 23:00 -->
+        <!-- จะใส่เฉพาะช่วงเวลาที่มีข้อมูล -->
+        <tr>
+          <td class="border p-1">07:00</td>
+          <td class="border"></td>
+          <td class="border bg-green-200 align-top" rowspan="6">เข้างาน</td>
+          <td class="border bg-green-200 align-top" rowspan="6">เข้างาน</td>
+          <td class="border bg-red-300 align-top text-red-900" rowspan="6">ขาดงาน</td>
+          <td class="border bg-green-200 align-top" rowspan="6">เข้างาน</td>
+          <td class="border bg-green-200 align-top" rowspan="6">เข้างาน</td>
+          <td class="border"></td>
+        </tr>
+        <tr><td class="border p-1">08:00</td><td class="border"></td><td class="border"></td></tr>
+        <tr><td class="border p-1">09:00</td><td class="border"></td><td class="border"></td></tr>
+        <tr><td class="border p-1">10:00</td><td class="border"></td><td class="border"></td></tr>
+        <tr><td class="border p-1">11:00</td><td class="border"></td><td class="border"></td></tr>
+        <tr><td class="border p-1">12:00</td><td class="border"></td><td class="border"></td></tr>
+
+        <!-- OT จันทร์ -->
+        <tr>
+          <td class="border p-1">13:00</td>
+          <td class="border"></td>
+          <td class="border bg-blue-200 text-blue-800" rowspan="5">OT</td>
+          <td class="border bg-yellow-100 text-yellow-800" rowspan="5">รออนุมัติ OT</td>
+          <td class="border"></td>
+          <td class="border"></td>
+          <td class="border"></td>
+          <td class="border bg-blue-200 text-blue-800" rowspan="6">OT</td>
+        </tr>
+        <tr><td class="border p-1">14:00</td><td class="border"></td><td class="border"></td><td class="border"></td><td class="border"></td></tr>
+        <tr><td class="border p-1">15:00</td><td class="border"></td><td class="border"></td><td class="border"></td><td class="border"></td></tr>
+        <tr><td class="border p-1">16:00</td><td class="border"></td><td class="border"></td><td class="border"></td><td class="border"></td></tr>
+        <tr><td class="border p-1">17:00</td><td class="border"></td><td class="border"></td><td class="border"></td><td class="border"></td></tr>
+        <tr><td class="border p-1">18:00</td><td class="border"></td><td class="border"></td><td class="border"></td><td class="border"></td><td class="border"></td><td class="border"></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+  </div>
+</body>
+</html>

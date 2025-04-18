@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>SCG Employee Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+  <!-- Sidebar -->
+  <aside class="bg-red-600 text-white w-64 p-6 fixed h-full">
+    <div class="mb-6">
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/SCG_Logo.svg/512px-SCG_Logo.svg.png"
+        alt="SCG Logo"
+        class="w-20 mb-4"
+      />
+      <h1 class="text-xl font-semibold">SCG Admin</h1>
+      <p class="text-sm text-white/80">Employee Management</p>
+    </div>
+    <nav class="space-y-2">
+      <a href="#" class="block py-2 hover:opacity-80">ภาพรวม</a>
+      <a href="#" class="block py-2 hover:opacity-80">จัดการพนักงาน</a>
+      <a href="#" class="block py-2 hover:opacity-80">การเงิน</a>
+      <button class="bg-white text-red-600 font-bold py-2 px-4 rounded hover:bg-gray-200 w-full mt-4">
+        Logout
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="ml-64 p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">จัดการพนักงาน</h2>
+
+    <!-- ฟอร์มค้นหา/กรอง -->
+    <div class="flex flex-col md:flex-row items-start md:items-end gap-4 mb-4">
+      <div>
+        <label class="text-sm text-gray-600 block mb-1">ค้นหาพนักงาน</label>
+        <input type="text" placeholder="ชื่อ / รหัสพนักงาน" class="border p-2 rounded w-64" />
+      </div>
+      <div>
+        <label class="text-sm text-gray-600 block mb-1">แผนก / ตำแหน่ง</label>
+        <select class="border p-2 rounded w-64">
+          <option value="">ทั้งหมด</option>
+          <option value="IT">IT</option>
+          <option value="HR">HR</option>
+          <option value="Finance">Finance</option>
+          <!-- etc. -->
+        </select>
+      </div>
+      <button class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 self-end">
+        ค้นหา
+      </button>
+    </div>
+
+    <!-- ปุ่ม Import/Export -->
+    <div class="flex items-center gap-2 mb-4">
+      <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+        Import CSV
+      </button>
+      <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        Export CSV
+      </button>
+    </div>
+
+    <!-- ตารางพนักงาน -->
+    <div class="bg-white shadow rounded-xl p-4">
+      <h3 class="text-lg font-bold mb-2">รายชื่อพนักงาน</h3>
+      <div class="overflow-auto">
+        <table class="w-full table-fixed border-collapse text-sm text-center">
+          <thead class="bg-gray-100 text-gray-700">
+            <tr>
+              <th class="border p-2 w-20">รหัส</th>
+              <th class="border p-2 w-32">ชื่อ-สกุล</th>
+              <th class="border p-2 w-24">แผนก</th>
+              <th class="border p-2 w-24">ตำแหน่ง</th>
+              <th class="border p-2 w-20">สถานะ</th>
+              <th class="border p-2 w-36">ตัวเลือก</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- ตัวอย่าง Row -->
+            <tr class="hover:bg-gray-50">
+              <td class="border p-2">EMP101</td>
+              <td class="border p-2 text-left">นางสาว สุดารัตน์ ทดสอบ</td>
+              <td class="border p-2">IT</td>
+              <td class="border p-2">Developer</td>
+              <td class="border p-2">
+                <span class="inline-block px-2 py-1 text-xs bg-green-200 text-green-800 rounded-full">
+                  ทำงานอยู่
+                </span>
+              </td>
+              <td class="border p-2 space-x-2">
+                <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600">
+                  แก้ไข
+                </button>
+                <button class="bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-400">
+                  ดูรายละเอียด
+                </button>
+              </td>
+            </tr>
+            <!-- ... loop ... -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

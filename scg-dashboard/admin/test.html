@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>SCG Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+  <!-- Navbar/Sidebar -->
+  <aside class="bg-red-600 text-white w-64 p-6 fixed h-full">
+    <div class="mb-6">
+      <img
+        src="https://storage.googleapis.com/be8website.appspot.com/logo-scg-white.png"
+        alt="SCG Logo"
+        class="w-20 mb-4"
+      />
+      <h1 class="text-xl font-semibold">SCG Admin</h1>
+      <p class="text-sm text-white/80">ระบบจัดการพนักงาน</p>
+    </div>
+    <!-- เมนู (ถ้ามี) -->
+    <nav class="space-y-2">
+      <a href="#" class="block text-white py-2 hover:opacity-80">ภาพรวม</a>
+      <a href="#" class="block text-white py-2 hover:opacity-80">จัดการพนักงาน</a>
+      <a href="#" class="block text-white py-2 hover:opacity-80">งานเอกสาร</a>
+      <button class="bg-white text-red-600 font-bold py-2 px-4 rounded hover:bg-gray-200 w-full mt-4">
+        Logout
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="ml-64 p-6">
+    <!-- ส่วนสรุปภาพรวม -->
+    <h2 class="text-2xl font-bold mb-4 text-gray-800">ภาพรวม (Overview)</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <!-- Card ตัวอย่าง 1 -->
+      <div class="bg-white shadow p-4 rounded-xl">
+        <p class="text-gray-600 text-sm">พนักงานใหม่ที่ยังไม่ส่งเอกสาร</p>
+        <h3 class="text-2xl font-bold mt-2 text-red-600">12 คน</h3>
+        <p class="text-sm text-gray-500 mt-1">ตัวอย่าง: ยังไม่ทำสำเนาบัตร / สำเนาทะเบียนบ้าน</p>
+      </div>
+      <!-- Card ตัวอย่าง 2 -->
+      <div class="bg-white shadow p-4 rounded-xl">
+        <p class="text-gray-600 text-sm">พนักงานที่ยังไม่ทำประกันสังคม</p>
+        <h3 class="text-2xl font-bold mt-2 text-red-600">8 คน</h3>
+        <p class="text-sm text-gray-500 mt-1">ต้องดำเนินการใน 3 วัน</p>
+      </div>
+      <!-- Card ตัวอย่าง 3 -->
+      <div class="bg-white shadow p-4 rounded-xl">
+        <p class="text-gray-600 text-sm">รายการขาดงานที่ไม่มีเหตุผล</p>
+        <h3 class="text-2xl font-bold mt-2 text-red-600">5 เคส</h3>
+        <p class="text-sm text-gray-500 mt-1">รอพิจารณาลงโทษ หรือปรับเงิน</p>
+      </div>
+    </div>
+
+    <!-- ส่วนค้นหา/กรอง -->
+    <div class="mb-4 flex flex-col md:flex-row items-start md:items-end gap-2">
+      <div>
+        <label class="block text-gray-700 text-sm mb-1">ค้นหาพนักงาน:</label>
+        <input
+          type="text"
+          placeholder="ชื่อ หรือรหัสพนักงาน"
+          class="border p-2 rounded w-64"
+        />
+      </div>
+      <div>
+        <label class="block text-gray-700 text-sm mb-1">กรองตามสถานะ:</label>
+        <select class="border p-2 rounded w-64">
+          <option value="">ทั้งหมด</option>
+          <option value="pendingDocs">ขาดเอกสาร</option>
+          <option value="waitSSO">รอประกันสังคม</option>
+          <option value="taxPending">รอยื่นภาษี</option>
+          <!-- ฯลฯ -->
+        </select>
+      </div>
+      <button class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+        ค้นหา
+      </button>
+    </div>
+
+    <!-- ตาราง/รายการพนักงาน -->
+    <div class="bg-white shadow rounded-xl p-4">
+      <h3 class="text-lg font-bold mb-2 text-gray-800">รายชื่อพนักงาน</h3>
+      <div class="overflow-auto">
+        <table class="table-fixed w-full text-sm text-center border-collapse">
+          <thead class="bg-gray-100 text-gray-600">
+            <tr>
+              <th class="p-2 border">รหัส</th>
+              <th class="p-2 border">ชื่อ-สกุล</th>
+              <th class="p-2 border">เอกสาร</th>
+              <th class="p-2 border">ประกันสังคม</th>
+              <th class="p-2 border">ภาษี</th>
+              <th class="p-2 border">ตัวเลือก</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- แถวตัวอย่าง -->
+            <tr class="hover:bg-gray-50">
+              <td class="border p-2">EMP001</td>
+              <td class="border p-2 text-left">สมชาย ทดสอบ</td>
+              <td class="border p-2">
+                <span class="inline-block px-2 py-1 bg-yellow-200 text-yellow-800 text-xs rounded-full">
+                  ขาดเอกสาร
+                </span>
+              </td>
+              <td class="border p-2">
+                <span class="inline-block px-2 py-1 bg-red-200 text-red-800 text-xs rounded-full">
+                  ยัง
+                </span>
+              </td>
+              <td class="border p-2">
+                <span class="inline-block px-2 py-1 bg-green-200 text-green-800 text-xs rounded-full">
+                  เรียบร้อย
+                </span>
+              </td>
+              <td class="border p-2">
+                <button class="text-blue-600 hover:underline">ดูรายละเอียด</button>
+              </td>
+            </tr>
+            <!-- ... แถวอื่นๆ -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
