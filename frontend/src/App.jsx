@@ -13,6 +13,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage'; 
 import EmployeeDetailPage from './pages/EmployeeDetailPage';
 import UploadWorkRecordPage from './pages/UploadWorkRecordPage';
+import SupervisorExplanationPage from './pages/Supervisor/SupervisorExplanationPage';
 
 
 
@@ -164,6 +165,15 @@ export default function App() {
       />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+      <Route
+  path="/supervisor/explanations"
+  element={
+    <PrivateRoute allowedRoles={['SUPERVISOR']} role={role}>
+      <SupervisorExplanationPage />
+    </PrivateRoute>
+  }
+/>
+
       <Route
   path="/employee-management/:id"
   element={

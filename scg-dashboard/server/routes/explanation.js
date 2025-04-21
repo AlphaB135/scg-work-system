@@ -1,28 +1,33 @@
-const express = require('express');
-const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
+import { requireAuth } from '../middleware/authMiddleware.js';
 
+const router = express.Router();
 const prisma = new PrismaClient();
 
-// API สำหรับบันทึกคำชี้แจง
-router.post('/submit-explanation', async (req, res) => {
+router.post('/submit-explanation', requireAuth, async (req, res) => {
   const { date, explanation } = req.body;
+  const userId = req.user?.id;
+
+  if (!date || !explanation) {
+    return res.status(400).json({ message: 'กรุณาระบุวันที่และคำชี้แจง' });
+  }
 
   try {
-    // บันทึกคำชี้แจง
     const newExplanation = await prisma.explanation.create({
       data: {
-        date,
+        date: new Date(date),
         explanation,
-        // ปรับตามโครงสร้างของฐานข้อมูล
+        employeeId: userId,
+        status: 'PENDING', // เริ่มต้นเป็นรอตรวจสอบ
       },
     });
-    
+
     res.status(200).json({ message: 'คำชี้แจงถูกส่งแล้ว', data: newExplanation });
   } catch (error) {
-    console.error(error);
+    console.error('Error saving explanation:', error);
     res.status(500).json({ message: 'เกิดข้อผิดพลาดในการบันทึกคำชี้แจง' });
   }
 });
 
-module.exports = router;
+export default router;

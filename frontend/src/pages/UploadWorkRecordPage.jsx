@@ -27,23 +27,29 @@ export default function UploadWorkRecordPage() {
 
   const handleUpload = async () => {
     if (!file) return;
+
     const formData = new FormData();
     formData.append('file', file);
     setLoading(true);
     setMessage('');
 
     try {
+      const token = localStorage.getItem('token');
+
       const res = await fetch('http://localhost:5000/api/upload-work-records', {
         method: 'POST',
-        body: formData,
-        credentials: 'include',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'เกิดข้อผิดพลาด');
 
-      setMessage(data.message);
+      setMessage(`✅ ${data.message}`);
       setRecords([]);
+      setFile(null);
     } catch (err) {
       console.error('❌ Error uploading:', err);
       setMessage(`❌ ${err.message}`);
@@ -61,12 +67,14 @@ export default function UploadWorkRecordPage() {
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">อัปโหลดข้อมูลการเข้าออกงาน</h2>
+
         <input
           type="file"
           accept=".csv"
           onChange={handleFileChange}
           className="block w-full border border-gray-300 p-2 rounded mb-4"
         />
+
         <button
           onClick={handleUpload}
           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
@@ -74,7 +82,12 @@ export default function UploadWorkRecordPage() {
         >
           {loading ? 'กำลังอัปโหลด...' : 'อัปโหลดไฟล์ CSV'}
         </button>
-        {message && <p className="mt-4 text-sm text-blue-600">{message}</p>}
+
+        {message && (
+          <p className={`mt-4 text-sm ${message.startsWith('✅') ? 'text-green-600' : 'text-red-600'}`}>
+            {message}
+          </p>
+        )}
 
         {records.length > 0 && (
           <div className="mt-6">
@@ -103,11 +116,16 @@ export default function UploadWorkRecordPage() {
                 </tbody>
               </table>
             </div>
+
             <div className="mt-4 flex justify-center gap-2">
               {[...Array(totalPages)].map((_, i) => (
                 <button
                   key={i + 1}
-                  className={`px-3 py-1 rounded border ${currentPage === i + 1 ? 'bg-red-600 text-white' : 'bg-white text-gray-800 hover:bg-gray-100'}`}
+                  className={`px-3 py-1 rounded border ${
+                    currentPage === i + 1
+                      ? 'bg-red-600 text-white'
+                      : 'bg-white text-gray-800 hover:bg-gray-100'
+                  }`}
                   onClick={() => setCurrentPage(i + 1)}
                 >
                   {i + 1}

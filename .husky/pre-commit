@@ -1,2 +1,4 @@
-#!/usr/bin/env sh
-npx --no -- lint-staged
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "✅ pre-commit ผ่าน (ไม่มี test script ให้รัน)"

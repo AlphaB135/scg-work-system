@@ -1,15 +1,11 @@
-// server/scripts/clear-work-records.js
-import prisma from '../utils/prismaClient.js';
+// 📁 server/scripts/clear-work-records.js
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
-async function clear() {
-  try {
-    const result = await prisma.workRecord.deleteMany({});
-    console.log(`🧹 ลบ workRecord สำเร็จแล้ว: ${result.count} แถว`);
-  } catch (err) {
-    console.error('❌ ลบข้อมูลล้มเหลว:', err);
-  } finally {
-    await prisma.$disconnect();
-  }
+async function run() {
+  await prisma.workRecord.deleteMany({});
+  console.log('🧹 ลบ Work Records เรียบร้อย');
+  await prisma.$disconnect();
 }
 
-clear();
+run();

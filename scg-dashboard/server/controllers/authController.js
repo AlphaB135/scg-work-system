@@ -1,3 +1,4 @@
+// File: server/controllers/authController.js
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import prisma from '../utils/prismaClient.js';
@@ -20,9 +21,8 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: 'รหัสผ่านไม่ถูกต้อง' });
 
-    // ✅ สำคัญ: ใส่ id ลง token
     const token = jwt.sign(
-      { id: user.id, role: user.role }, // <== เปลี่ยนเป็น id
+      { id: user.id, role: user.role },
       JWT_SECRET,
       { expiresIn: '3d' }
     );
@@ -93,7 +93,7 @@ export const resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await prisma.user.update({
-      where: { id: decoded.id }, // <== ใช้ id ที่มาจาก token
+      where: { id: decoded.id },
       data: { password: hashedPassword },
     });
 
@@ -101,5 +101,53 @@ export const resetPassword = async (req, res) => {
   } catch (error) {
     console.error('❌ Error in resetPassword:', error);
     res.status(400).json({ message: 'ลิงก์ไม่ถูกต้องหรือหมดอายุ' });
+  }
+};
+
+// ✅ ดูข้อมูลตัวเอง
+export const getMe = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        company: true,
+        branch: true,
+        department: true,
+        position: true,
+        employeeCode: true,
+        employeeType: true,
+        employeeGroup: true,
+        salary: true,
+        sso: true,
+        tax: true,
+        payrollRound: true,
+        salaryRound: true,
+        individualSetting: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) return res.status(404).json({ message: 'ไม่พบผู้ใช้' });
+
+    if (typeof user.individualSetting === 'string') {
+      try {
+        user.individualSetting = JSON.parse(user.individualSetting);
+      } catch (e) {
+        user.individualSetting = {};
+      }
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error('❌ Error in getMe:', err);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด', error: err.message });
   }
 };

@@ -30,6 +30,8 @@ export default function LoginPage({ setRole }) {
           navigate('/admin');
         } else if (data.role === 'EMPLOYEE') {
           navigate('/employee');
+        } else if (data.role === 'SUPERVISOR') {
+          navigate('/supervisor/explanations');
         } else {
           console.warn('⚠️ ไม่พบ role ที่รองรับ:', data.role);
           setError('สิทธิ์ของผู้ใช้นี้ไม่ถูกต้อง');

@@ -1,4 +1,3 @@
-// File: server/index.js
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
@@ -14,8 +13,12 @@ import reminderRoutes from './routes/reminderRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import payrollRoutes from './routes/payrollRoutes.js';
 import calendarRoutes from './routes/calendar.js';
-
+import employeeRoutes from './routes/employeeRoutes.js';
 import { startReminderCron } from './jobs/reminderCron.js';
+import explanationRoutes from './routes/explanation.js';
+import summaryRoutes from './routes/summary.js';
+import otRoutes from './routes/otRoutes.js';
+
 
 dotenv.config();
 const app = express();
@@ -28,6 +31,8 @@ app.use(cors({
 app.use(cookieParser());
 app.use(helmet());
 app.use(express.json());
+app.use('/api', summaryRoutes);
+app.use('/api', otRoutes);
 
 // ✅ Rate Limiting
 const limiter = rateLimit({
@@ -44,8 +49,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api', workRecordRoutes);
 app.use('/api', reminderRoutes);
 app.use('/api/reminders', reminderRoutes); // สำรอง
+app.use('/api', clockingRoutes);
+app.use('/api/employees', employeeRoutes);
+app.use('/api', explanationRoutes);
 app.use('/api', payrollRoutes);
-app.use('/api', clockingRoutes); // ✅ สำหรับแปะบัตร real-time
 
 // ✅ Cron
 startReminderCron();

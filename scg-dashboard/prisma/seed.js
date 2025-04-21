@@ -1,3 +1,4 @@
+//seed.js
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
@@ -71,11 +72,11 @@ async function main() {
           tax: emp.tax?.status === 'active',
           payrollRound: emp.payroll?.payrollRound,
           salaryRound: emp.payroll?.salaryRound,
-          individualSetting: {
+          individualSetting: JSON.stringify({
             bankAccount: emp.individualSetting?.bankAccount,
             paymentMethod: emp.individualSetting?.paymentMethod,
             note: emp.individualSetting?.note || '',
-          },
+          }),
         },
       });
     }

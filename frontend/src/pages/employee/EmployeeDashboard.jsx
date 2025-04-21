@@ -1,3 +1,4 @@
+// File: src/pages/employee/EmployeeDashboard.jsx
 import React, { useEffect, useState } from 'react';
 import LogoutButton from '../../components/LogoutButton';
 import { Link } from 'react-router-dom';
@@ -11,7 +12,7 @@ export default function EmployeeDashboard() {
     const fetchData = async () => {
       try {
         const [resUser, resSummary] = await Promise.all([
-          fetch('http://localhost:5000/api/me', { credentials: 'include' }),
+          fetch('http://localhost:5000/api/auth/me', { credentials: 'include' }),
           fetch('http://localhost:5000/api/my-summary', { credentials: 'include' }),
         ]);
 
@@ -120,15 +121,15 @@ export default function EmployeeDashboard() {
               </div>
               <div className="bg-gray-50 p-4 rounded-xl">
                 <p className="text-gray-500">เงินเดือน</p>
-                <p className="font-semibold">{user.salary?.toLocaleString()} บาท</p>
+                <p className="font-semibold">{user.salary?.toLocaleString() || '-'} บาท</p>
               </div>
               <div className="bg-gray-50 p-4 rounded-xl">
                 <p className="text-gray-500">SSO</p>
-                <p className="font-semibold">{user.sso || '-'}</p>
+                <p className="font-semibold">{user.sso ? '✅ มี' : '❌ ไม่มี'}</p>
               </div>
               <div className="bg-gray-50 p-4 rounded-xl">
                 <p className="text-gray-500">ภาษี</p>
-                <p className="font-semibold">{user.tax || '-'}</p>
+                <p className="font-semibold">{user.tax ? '✅ มี' : '❌ ไม่มี'}</p>
               </div>
               <div className="bg-gray-50 p-4 rounded-xl">
                 <p className="text-gray-500">รอบจ่ายเงิน</p>
@@ -141,6 +142,15 @@ export default function EmployeeDashboard() {
               <div className="bg-gray-50 p-4 rounded-xl">
                 <p className="text-gray-500">กลุ่มพนักงาน</p>
                 <p className="font-semibold">{user.employeeGroup || '-'}</p>
+              </div>
+              {/* ✅ เพิ่มส่วนบัญชีธนาคารจาก individualSetting */}
+              <div className="bg-gray-50 p-4 rounded-xl">
+                <p className="text-gray-500">บัญชีธนาคาร</p>
+                <p className="font-semibold">{user.individualSetting?.bankAccount || '-'}</p>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-xl">
+                <p className="text-gray-500">วิธีรับเงิน</p>
+                <p className="font-semibold">{user.individualSetting?.paymentMethod || '-'}</p>
               </div>
             </div>
           </div>
