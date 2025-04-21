@@ -4,14 +4,14 @@ module.exports = {
   env: {
     browser: true,
     node: true,
-    es2022: true,
+    es2022: true
   },
   parserOptions: {
     ecmaVersion: "latest",
-    sourceType: "module",
+    sourceType: "module"
   },
   settings: {
-    react: { version: "detect" },
+    react: { version: "detect" }
   },
   extends: [
     "eslint:recommended",
@@ -20,6 +20,6 @@ module.exports = {
   ],
   plugins: ["react"],
   rules: {
-    // ใส่กฎเพิ่มเติมได้ตรงนี้
+    // ใส่กฎเสริมได้ที่นี่
   }
 };
