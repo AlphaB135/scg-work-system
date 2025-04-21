@@ -3,3 +3,14 @@ node_modules
 uploads
 .DS_Store
 dist
+# dependencies
+node_modules/
+# lock files
+package-lock.json
+# Husky helper
+.husky/_/
+# build outputs
+dist/
+.idea/
+.vscode/
+node_modules/
