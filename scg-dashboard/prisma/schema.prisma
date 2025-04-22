@@ -7,7 +7,6 @@ datasource db {
   provider = "sqlserver"
   url      = env("DATABASE_URL")
 }
-
 model User {
   id                Int             @id @default(autoincrement())
   username          String          @unique @db.NVarChar(255)
@@ -21,6 +20,7 @@ model User {
   branch            String?         @db.NVarChar(255)
   phone             String?         @db.NVarChar(255)
   salary            Float?
+  explanations     Explanation[] 
   employeeCode      String?         @unique @db.NVarChar(255)
   employeeType      String?         @db.NVarChar(255)
   employeeGroup     String?         @db.NVarChar(255)
@@ -107,4 +107,14 @@ model AdminLog {
   details   String?   @db.NVarChar(255)
 
   admin     User      @relation("UserAdminLogs", fields: [adminId], references: [id])
+}
+
+model Explanation {
+  id           Int      @id @default(autoincrement())
+  date         DateTime @db.DateTime
+  explanation  String   @db.NVarChar(1000)
+  status       String   @default("PENDING") @db.NVarChar(20) // ✅ กลับมาใช้ String
+  employee     User     @relation(fields: [employeeId], references: [id])
+  employeeId   Int
+  createdAt    DateTime @default(now()) @db.DateTime
 }

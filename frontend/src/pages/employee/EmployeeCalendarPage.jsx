@@ -17,9 +17,7 @@ export default function EmployeeCalendarPage() {
 
   const fetchUser = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/me', {
-        credentials: 'include',
-      });
+      const res = await fetch('http://localhost:5000/api/me', { credentials: 'include' });
       const data = await res.json();
       setUser(data);
     } catch (err) {
@@ -29,16 +27,20 @@ export default function EmployeeCalendarPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/my-work-calendar?month=${month}&year=${year}`, {
-        credentials: 'include',
-      });
+      const res = await fetch(
+        `http://localhost:5000/api/my-work-calendar?month=${month}&year=${year}`,
+        { credentials: 'include' }
+      );
       const data = await res.json();
 
       const daysInMonth = new Date(year, month, 0).getDate();
-      const firstDayIndex = new Date(year, month - 1, 1).getDay();
+      const firstDayIndex = new Date(year, month - 1, 1).getDay(); // Sunday=0, Saturday=6
 
       const mapped = [];
+      // วางช่องว่างให้ตรงกับวันแรก
       for (let i = 0; i < firstDayIndex; i++) mapped.push(null);
+
+      // เติมข้อมูลวันจริง
       for (let i = 1; i <= daysInMonth; i++) {
         const dayData = data.find(d => d.day === i);
         if (dayData) {
@@ -52,22 +54,20 @@ export default function EmployeeCalendarPage() {
             statusText: dayData.statusText || ''
           });
         } else {
-          mapped.push({
-            day: i,
-            type: 'unknown',
-            checkIn: '-',
-            checkOut: '-',
-            statusText: 'ไม่พบข้อมูล'
-          });
+          mapped.push({ day: i, type: 'unknown', checkIn: '-', checkOut: '-', statusText: 'ไม่พบข้อมูล' });
         }
       }
+
+      // เติม null จนครบ 42 ช่อง (6 แถว)
+      while (mapped.length < 42) mapped.push(null);
+
       setCalendarData(mapped);
     } catch (err) {
       console.error('Error loading calendar:', err);
     }
   };
 
-  const formatTime = (datetimeString) => {
+  const formatTime = datetimeString => {
     if (!datetimeString || datetimeString === '-') return '-';
     const d = new Date(datetimeString);
     if (isNaN(d.getTime())) return '-';
@@ -76,13 +76,40 @@ export default function EmployeeCalendarPage() {
 
   const handleDayClick = (d, index) => {
     if (popoverIndex === index) {
-      // ถ้าคลิกวันเดิม ให้ปิด
       setSelectedDay(null);
       setPopoverIndex(null);
     } else {
-      // คลิกวันใหม่
       setSelectedDay(d);
       setPopoverIndex(index);
+    }
+  };
+
+  const handleExplanationSubmit = async (d) => {
+    const explanation = prompt(`กรุณาระบุคำชี้แจงสำหรับวันที่ ${d.day}`);
+    if (!explanation) return;
+
+    const date = `${year}-${String(month).padStart(2, '0')}-${String(d.day).padStart(2, '0')}`;
+
+    try {
+      const res = await fetch('http://localhost:5000/api/explanation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({ date, message: explanation })
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        alert('ส่งคำชี้แจงเรียบร้อยแล้ว');
+        fetchData();
+      } else {
+        alert(result.message || 'เกิดข้อผิดพลาด');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('ส่งไม่สำเร็จ');
     }
   };
 
@@ -126,6 +153,7 @@ export default function EmployeeCalendarPage() {
   return (
     <div className="bg-gray-100 min-h-screen font-sans flex">
       <aside className="bg-red-600 text-white w-64 p-6 fixed h-full">
+        {/* เมนูเดิมไม่แตะ */}
         <div className="mb-6">
           <img src="https://storage.googleapis.com/be8website.appspot.com/logo-scg-white.png" alt="SCG Logo" className="w-20 mb-4" />
           <h1 className="text-xl font-semibold">SCG Employee</h1>
@@ -145,28 +173,27 @@ export default function EmployeeCalendarPage() {
         <h2 className="text-2xl font-bold text-gray-800 mb-4">ปฏิทินการทำงาน</h2>
 
         {user && (
-  <div className="bg-white rounded-xl shadow p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
-    <div>
-    <p className="text-lg font-bold">{user.fullName}</p>
+          <div className="bg-white rounded-xl shadow p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div>
+              <p className="text-lg font-bold">{user.fullName}</p>
+              <p className="text-gray-600 text-sm">ตำแหน่ง: {user.position || 'ไม่ระบุ'}</p>
+              <p className="text-gray-600 text-sm">รหัสพนักงาน: {user.employeeCode || `EMP${user.id}`}</p>
+            </div>
+            <span className="mt-3 md:mt-0 inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+              สถานะ: {user.statusText || 'ทำงานปกติ'}
+            </span>
+          </div>
+        )}
 
-      <p className="text-gray-600 text-sm">
-        ตำแหน่ง: {user.position || 'ไม่ระบุ'}
-      </p>
-      <p className="text-gray-600 text-sm">
-        รหัสพนักงาน: {user.employeeCode || `EMP${user.id}`}
-      </p>
-    </div>
-    <span className="mt-3 md:mt-0 inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
-      สถานะ: {user.statusText || 'ทำงานปกติ'}
-    </span>
-  </div>
-)}
-
-
+        {/* เดือน/ปี เลือกอันนี้กลับมา */}
         <div className="flex gap-4 mb-4">
           <div>
             <label className="text-sm text-gray-700 mr-2">เดือน:</label>
-            <select value={month} onChange={(e) => setMonth(parseInt(e.target.value))} className="p-2 border rounded">
+            <select
+              value={month}
+              onChange={e => setMonth(parseInt(e.target.value))}
+              className="p-2 border rounded"
+            >
               {[...Array(12)].map((_, i) => (
                 <option key={i} value={i + 1}>
                   {new Date(0, i).toLocaleString('th-TH', { month: 'long' })}
@@ -176,122 +203,66 @@ export default function EmployeeCalendarPage() {
           </div>
           <div>
             <label className="text-sm text-gray-700 mr-2">ปี:</label>
-            <select value={year} onChange={(e) => setYear(parseInt(e.target.value))} className="p-2 border rounded">
-              {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
+            <select
+              value={year}
+              onChange={e => setYear(parseInt(e.target.value))}
+              className="p-2 border rounded"
+            >
+              {[2024, 2025, 2026].map(y => (
+                <option key={y} value={y}>{y}</option>
+              ))}
             </select>
           </div>
         </div>
 
-        <h3 className="text-center text-lg font-semibold mb-4">
-          {new Date(year, month - 1).toLocaleString('th-TH', { month: 'long', year: 'numeric' })}
-        </h3>
-
+        {/* หัวตารางวัน */}
         <div className="grid grid-cols-7 gap-2 text-center text-sm font-medium mb-2">
-          {['อา','จ','อ','พ','พฤ','ศ','ส'].map((d,i) => <div key={i}>{d}</div>)}
+          {['อา','จ','อ','พ','พฤ','ศ','ส'].map((d, i) => (
+            <div key={i}>{d}</div>
+          ))}
         </div>
 
+        {/* ตารางวัน */}
         <div className="grid grid-cols-7 gap-2 text-center">
-  {calendarData.map((d, i) => {
-    if (!d) return <div key={i} className="p-2 h-20"></div>;
-    const isSelected = i === popoverIndex;
+          {calendarData.map((d, i) => {
+            if (!d) return <div key={i} className="p-2 h-20 bg-gray-100 rounded" />;
+            const isSelected = i === popoverIndex;
 
-    return (
-
-      
-      <div key={i} className="relative">
-        <div
-          onClick={() => handleDayClick(d, i)}
-          className={`p-4 h-24 flex flex-col justify-center rounded cursor-pointer hover:scale-105 transition-all ${getBgClass(d.type)} ${d.type === 'holiday' ? 'text-gray-600' : 'text-white'}`}
-        >
-          <div className="font-medium text-lg">{d.day}</div>
-          {/* ✅ แสดงข้อความในกล่องวัน เช่น “ออกก่อนเวลา 10 นาที” */}
-          {['late', 'early', 'absent', 'ot', 'holiday', 'leave'].includes(d.type) && (
-            <div className="text-xs mt-1 truncate">{d.statusText}</div>
-          )}
-        </div>
-
-        {isSelected && (
-          <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 z-10 w-72 bg-white rounded-lg shadow-lg p-4 text-left text-sm">
-            <h4 className="font-bold mb-1">
-              วันที่ {d.day} {new Date(year, month - 1).toLocaleString('th-TH', { month: 'long', year: 'numeric' })}
-            </h4>
-            <p><strong>เวลาทำงาน:</strong> 07:30 - 16:30 น.</p>
-            <p><strong>Check‑In:</strong> <span className={d.type === 'late' ? 'text-yellow-600 font-bold' : ''}>{d.checkIn}</span></p>
-            <p><strong>Check‑Out:</strong> <span className={d.type === 'early' ? 'text-orange-600 font-bold' : ''}>{d.checkOut}</span></p>
-            <p><strong>สถานะ:</strong> <span className={`font-bold ${{
-              late: 'text-yellow-600', early: 'text-orange-600',
-              ot: 'text-blue-600', holiday: 'text-gray-600',
-              work: 'text-green-600', absent: 'text-red-600', leave: 'text-teal-600'
-            }[d.type] || ''}`}>
-              {d.type === 'ot' ? `${d.statusText} (${calculateOTHours(d.checkOut).toFixed(1)} ชม.)` : d.statusText}
-            </span></p>
-          </div>
-        )}
-      </div>
-
-
-    );
-  })}
-</div>
-      </div>
-
-
-
-
-      {/* {modalOpen && selectedDay && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-96 relative">
-            <button onClick={() => setModalOpen(false)} className="absolute top-2 right-3 text-gray-600 text-xl">×</button>
-            <h3 className="text-lg font-bold mb-4">
-              วันที่ {selectedDay.day} {new Date(year, month - 1).toLocaleString('th-TH', { month: 'long', year: 'numeric' })}
-            </h3>
-            <p><strong>Check-In:</strong> {selectedDay.checkIn}</p>
-            <p><strong>Check-Out:</strong> {selectedDay.checkOut}</p>
-            <p><strong>สถานะ:</strong> {selectedDay.statusText}</p>
-
-            {selectedDay.type === 'absent' && (
-              <div className="mt-6">
-                <button
-                  onClick={async () => {
-                    const explanation = prompt('กรุณาระบุคำชี้แจงการขาดงาน');
-                    if (!explanation) return;
-
-                    try {
-                      const res = await fetch('http://localhost:5000/api/submit-explanation', {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                        credentials: 'include',
-                        body: JSON.stringify({
-                          date: `${year}-${String(month).padStart(2, '0')}-${String(selectedDay.day).padStart(2, '0')}`,
-                          explanation,
-                        }),
-                      });
-
-                      const result = await res.json();
-
-                      if (res.ok) {
-                        alert('ส่งคำชี้แจงเรียบร้อยแล้ว');
-                        setModalOpen(false);
-                        fetchData();
-                      } else {
-                        alert(result.message || 'เกิดข้อผิดพลาด');
-                      }
-                    } catch (error) {
-                      console.error('Error:', error);
-                      alert('ส่งคำชี้แจงไม่สำเร็จ');
-                    }
-                  }}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            return (
+              <div key={i} className="relative">
+                <div
+                  onClick={() => handleDayClick(d, i)}
+                  className={`p-4 h-24 flex flex-col justify-center rounded cursor-pointer hover:scale-105 transition-all ${getBgClass(d.type)} ${d.type==='holiday'? 'text-gray-600':'text-white'}`}
                 >
-                  ส่งคำชี้แจงการขาดงาน
-                </button>
+                  <div className="font-medium text-lg">{d.day}</div>
+                  {['late','early','absent','ot','holiday','leave'].includes(d.type) && (
+                    <div className="text-xs mt-1 truncate">{d.statusText}</div>
+                  )}
+                </div>
+
+                {isSelected && (
+                  <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 z-10 w-72 bg-white rounded-lg shadow-lg p-4 text-left text-sm">
+                    <h4 className="font-bold mb-1">
+                      วันที่ {d.day} {new Date(year, month-1).toLocaleString('th-TH',{ month:'long', year:'numeric'})}
+                    </h4>
+                    <p><strong>Check‑In:</strong> {d.checkIn}</p>
+                    <p><strong>Check‑Out:</strong> {d.checkOut}</p>
+                    <p><strong>สถานะ:</strong> {d.type==='ot'? `${d.statusText} (${calculateOTHours(d.checkOut).toFixed(1)} ชม.)`: d.statusText}</p>
+                    {['absent', 'late'].includes(d.type) && (
+                      <button
+                        onClick={() => handleExplanationSubmit(d)}
+                        className="mt-2 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
+                      >
+                        ส่งคำชี้แจง
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            );
+          })}
         </div>
-      )} */}
+      </div>
     </div>
   );
 }

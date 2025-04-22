@@ -4,48 +4,53 @@ export default function SupervisorExplanationPage() {
   const [explanations, setExplanations] = useState([]);
 
   useEffect(() => {
-    // ตอนนี้ใช้ mock data ทดสอบก่อน
-    const mockData = [
-      {
-        id: 'exp1',
-        employee: { firstName: 'ณัฐพล', lastName: 'ใจดี' },
-        date: '2025-04-17',
-        explanation: 'ไปหาหมอ มีใบรับรองแพทย์',
-        status: 'PENDING',
-      },
-      {
-        id: 'exp2',
-        employee: { firstName: 'อังคณา', lastName: 'นวลใส' },
-        date: '2025-04-16',
-        explanation: 'ติดธุระด่วนที่บ้าน',
-        status: 'PENDING',
-      },
-      {
-        id: 'exp1',
-        employee: { firstName: 'ณัฐพล', lastName: 'ใจดี' },
-        date: '2025-04-17',
-        explanation: 'ไปหาหมอ มีใบรับรองแพทย์',
-        status: 'PENDING',
-      },
-      {
-        id: 'exp2',
-        employee: { firstName: 'อังคณา', lastName: 'นวลใส' },
-        date: '2025-04-16',
-        explanation: 'ติดธุระด่วนที่บ้าน',
-        status: 'PENDING',
-      },
-    ];
-    setExplanations(mockData);
+    const fetchData = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/explanation/pending', {
+          credentials: 'include'
+        });
+        const data = await res.json();
+        setExplanations(data);
+      } catch (err) {
+        console.error('โหลดคำชี้แจงล้มเหลว', err);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const handleApprove = (id) => {
-    alert(`✅ อนุมัติคำชี้แจง ${id}`);
-    // TODO: call API PUT /api/explanations/:id
+  const handleApprove = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/explanation/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ status: 'APPROVED' })
+      });
+      if (res.ok) {
+        setExplanations(prev => prev.filter(e => e.id !== id));
+        alert('✅ อนุมัติเรียบร้อย');
+      }
+    } catch (err) {
+      console.error('อนุมัติคำชี้แจงล้มเหลว', err);
+    }
   };
 
-  const handleReject = (id) => {
-    alert(`❌ ปฏิเสธคำชี้แจง ${id}`);
-    // TODO: call API PUT /api/explanations/:id
+  const handleReject = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/explanation/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ status: 'REJECTED' })
+      });
+      if (res.ok) {
+        setExplanations(prev => prev.filter(e => e.id !== id));
+        alert('❌ ปฏิเสธเรียบร้อย');
+      }
+    } catch (err) {
+      console.error('ปฏิเสธคำชี้แจงล้มเหลว', err);
+    }
   };
 
   return (
@@ -65,7 +70,7 @@ export default function SupervisorExplanationPage() {
         <tbody>
           {explanations.map((item) => (
             <tr key={item.id} className="border-t">
-              <td className="p-2">{item.employee.firstName} {item.employee.lastName}</td>
+              <td className="p-2">{item.employee.fullName}</td>
               <td className="p-2">{new Date(item.date).toLocaleDateString('th-TH')}</td>
               <td className="p-2">{item.explanation}</td>
               <td className="p-2">{item.status}</td>

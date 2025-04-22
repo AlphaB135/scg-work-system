@@ -1,10 +1,12 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { requireAuth } from '../middleware/authMiddleware.js';
+import { updateExplanationStatus, getPendingExplanations } from '../controllers/explanationController.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// ✅ พนักงานส่งคำชี้แจง
 router.post('/submit-explanation', requireAuth, async (req, res) => {
   const { date, explanation } = req.body;
   const userId = req.user?.id;
@@ -19,7 +21,7 @@ router.post('/submit-explanation', requireAuth, async (req, res) => {
         date: new Date(date),
         explanation,
         employeeId: userId,
-        status: 'PENDING', // เริ่มต้นเป็นรอตรวจสอบ
+        status: 'PENDING',
       },
     });
 
@@ -29,5 +31,11 @@ router.post('/submit-explanation', requireAuth, async (req, res) => {
     res.status(500).json({ message: 'เกิดข้อผิดพลาดในการบันทึกคำชี้แจง' });
   }
 });
+
+// ✅ หัวหน้ากดอนุมัติ / ปฏิเสธคำชี้แจง
+router.patch('/explanation/:id', requireAuth, updateExplanationStatus);
+
+// ✅ ดึงรายการคำชี้แจงที่รออนุมัติ
+router.get('/explanation/pending', requireAuth, getPendingExplanations);
 
 export default router;
