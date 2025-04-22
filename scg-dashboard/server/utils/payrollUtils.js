@@ -10,9 +10,9 @@ export function calculateDeductions(workRecords, salary) {
   const deductions = [];
 
   workRecords.forEach(record => {
-    const { date, type, checkIn } = record;
+    const { date, status, clockIn } = record;
 
-    if (type === 'absent') {
+    if (status === 'ABSENT') {
       deductions.push({
         date,
         reason: 'ขาดงาน',
@@ -20,22 +20,24 @@ export function calculateDeductions(workRecords, salary) {
       });
     }
 
-    if (type === 'late') {
-      if (!checkIn || checkIn === '-') return;
+    if (status === 'PRESENT' && clockIn) {
+      const checkInDate = new Date(clockIn);
+      const lateMinutes = (checkInDate.getHours() - 8) * 60 + (checkInDate.getMinutes() - 30);
 
-      const [h, m] = checkIn.split(':').map(Number);
-      const totalLateMinutes = (h - 8) * 60 + (m - 30);
-      let amount = 0;
+      if (lateMinutes > 5) {
+        let amount = 0;
+        if (lateMinutes >= 15 && lateMinutes < 30) amount = 50;
+        else if (lateMinutes >= 30 && lateMinutes <= 60) amount = 100;
+        else if (lateMinutes > 60) amount = 200;
 
-      if (totalLateMinutes >= 15 && totalLateMinutes < 30) amount = 50;
-      else if (totalLateMinutes >= 30 && totalLateMinutes <= 60) amount = 100;
-      else if (totalLateMinutes > 60) amount = 200;
-
-      deductions.push({
-        date,
-        reason: `มาสาย ${totalLateMinutes} นาที`,
-        amount,
-      });
+        if (amount > 0) {
+          deductions.push({
+            date,
+            reason: `มาสาย ${lateMinutes} นาที`,
+            amount,
+          });
+        }
+      }
     }
   });
 

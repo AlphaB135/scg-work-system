@@ -1,23 +1,37 @@
 import React, { useEffect, useState } from 'react';
 
 export default function SupervisorExplanationPage() {
-  const [explanations, setExplanations] = useState([]);
+  const [pendingExplanations, setPendingExplanations] = useState([]);
+  const [historyExplanations, setHistoryExplanations] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('http://localhost:5000/api/explanation/pending', {
-          credentials: 'include'
-        });
-        const data = await res.json();
-        setExplanations(data);
-      } catch (err) {
-        console.error('โหลดคำชี้แจงล้มเหลว', err);
-      }
-    };
-
-    fetchData();
+    fetchPending();
+    fetchHistory();
   }, []);
+
+  const fetchPending = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/explanation/pending', {
+        credentials: 'include'
+      });
+      const data = await res.json();
+      setPendingExplanations(data);
+    } catch (err) {
+      console.error('โหลดคำชี้แจงรออนุมัติล้มเหลว', err);
+    }
+  };
+
+  const fetchHistory = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/explanation/history', {
+        credentials: 'include'
+      });
+      const data = await res.json();
+      setHistoryExplanations(data);
+    } catch (err) {
+      console.error('โหลดประวัติคำชี้แจงล้มเหลว', err);
+    }
+  };
 
   const handleApprove = async (id) => {
     try {
@@ -28,7 +42,8 @@ export default function SupervisorExplanationPage() {
         body: JSON.stringify({ status: 'APPROVED' })
       });
       if (res.ok) {
-        setExplanations(prev => prev.filter(e => e.id !== id));
+        fetchPending();
+        fetchHistory();
         alert('✅ อนุมัติเรียบร้อย');
       }
     } catch (err) {
@@ -45,7 +60,8 @@ export default function SupervisorExplanationPage() {
         body: JSON.stringify({ status: 'REJECTED' })
       });
       if (res.ok) {
-        setExplanations(prev => prev.filter(e => e.id !== id));
+        fetchPending();
+        fetchHistory();
         alert('❌ ปฏิเสธเรียบร้อย');
       }
     } catch (err) {
@@ -55,9 +71,8 @@ export default function SupervisorExplanationPage() {
 
   return (
     <div className="p-6 font-sans">
-      <h2 className="text-2xl font-bold mb-4">รายการคำชี้แจงรออนุมัติ</h2>
-
-      <table className="w-full border text-sm">
+      <h2 className="text-2xl font-bold mb-4">📌 คำชี้แจงรออนุมัติ</h2>
+      <table className="w-full border text-sm mb-10">
         <thead>
           <tr className="bg-gray-200 text-left">
             <th className="p-2">ชื่อพนักงาน</th>
@@ -68,7 +83,7 @@ export default function SupervisorExplanationPage() {
           </tr>
         </thead>
         <tbody>
-          {explanations.map((item) => (
+          {pendingExplanations.map((item) => (
             <tr key={item.id} className="border-t">
               <td className="p-2">{item.employee.fullName}</td>
               <td className="p-2">{new Date(item.date).toLocaleDateString('th-TH')}</td>
@@ -87,6 +102,30 @@ export default function SupervisorExplanationPage() {
                 >
                   ปฏิเสธ
                 </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h2 className="text-xl font-bold mb-4">📄 ประวัติการอนุมัติ / ปฏิเสธ</h2>
+      <table className="w-full border text-sm">
+        <thead>
+          <tr className="bg-gray-100 text-left">
+            <th className="p-2">ชื่อพนักงาน</th>
+            <th className="p-2">วันที่</th>
+            <th className="p-2">คำชี้แจง</th>
+            <th className="p-2">สถานะ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {historyExplanations.map((item) => (
+            <tr key={item.id} className="border-t">
+              <td className="p-2">{item.employee.fullName}</td>
+              <td className="p-2">{new Date(item.date).toLocaleDateString('th-TH')}</td>
+              <td className="p-2">{item.explanation}</td>
+              <td className={`p-2 font-bold ${item.status === 'APPROVED' ? 'text-green-600' : 'text-red-600'}`}>
+                {item.status === 'APPROVED' ? '✅ อนุมัติแล้ว' : '❌ ปฏิเสธแล้ว'}
               </td>
             </tr>
           ))}

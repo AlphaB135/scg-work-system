@@ -60,6 +60,8 @@ app.use('/api', clockingRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api', explanationRoutes);
 app.use('/api', payrollRoutes);
+app.use('/api/payroll', payrollRoutes);
+
 
 // ✅ Cron
 startReminderCron();

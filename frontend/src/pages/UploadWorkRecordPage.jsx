@@ -38,10 +38,8 @@ export default function UploadWorkRecordPage() {
 
       const res = await fetch('http://localhost:5000/api/upload-work-records', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData
+        body: formData,
+        credentials: 'include',
       });
 
       const data = await res.json();

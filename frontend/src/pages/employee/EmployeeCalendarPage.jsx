@@ -9,6 +9,7 @@ export default function EmployeeCalendarPage() {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
   const [user, setUser] = useState(null);
+  const [explanationMap, setExplanationMap] = useState({});
 
   useEffect(() => {
     fetchUser();
@@ -27,20 +28,19 @@ export default function EmployeeCalendarPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/my-work-calendar?month=${month}&year=${year}`,
-        { credentials: 'include' }
-      );
+      const res = await fetch(`http://localhost:5000/api/my-work-calendar?month=${month}&year=${year}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
 
       const daysInMonth = new Date(year, month, 0).getDate();
-      const firstDayIndex = new Date(year, month - 1, 1).getDay(); // Sunday=0, Saturday=6
+      const firstDayIndex = new Date(year, month - 1, 1).getDay();
 
       const mapped = [];
-      // วางช่องว่างให้ตรงกับวันแรก
+      const map = {};
+
       for (let i = 0; i < firstDayIndex; i++) mapped.push(null);
 
-      // เติมข้อมูลวันจริง
       for (let i = 1; i <= daysInMonth; i++) {
         const dayData = data.find(d => d.day === i);
         if (dayData) {
@@ -53,15 +53,16 @@ export default function EmployeeCalendarPage() {
             rawCheckOut: dayData.checkOut,
             statusText: dayData.statusText || ''
           });
+          if (dayData.explanation) map[i] = dayData.explanation;
         } else {
           mapped.push({ day: i, type: 'unknown', checkIn: '-', checkOut: '-', statusText: 'ไม่พบข้อมูล' });
         }
       }
 
-      // เติม null จนครบ 42 ช่อง (6 แถว)
       while (mapped.length < 42) mapped.push(null);
 
       setCalendarData(mapped);
+      setExplanationMap(map);
     } catch (err) {
       console.error('Error loading calendar:', err);
     }
@@ -85,25 +86,27 @@ export default function EmployeeCalendarPage() {
   };
 
   const handleExplanationSubmit = async (d) => {
-    const explanation = prompt(`กรุณาระบุคำชี้แจงสำหรับวันที่ ${d.day}`);
+    const existingExplanation = explanationMap[d.day];
+    const explanation = prompt(`กรุณาระบุคำชี้แจงสำหรับวันที่ ${d.day}`, existingExplanation || '');
     if (!explanation) return;
 
     const date = `${year}-${String(month).padStart(2, '0')}-${String(d.day).padStart(2, '0')}`;
 
     try {
-      const res = await fetch('http://localhost:5000/api/explanation', {
+      const res = await fetch('http://localhost:5000/api/submit-explanation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         credentials: 'include',
-        body: JSON.stringify({ date, message: explanation })
+        body: JSON.stringify({ date, explanation })
       });
 
       const result = await res.json();
       if (res.ok) {
-        alert('ส่งคำชี้แจงเรียบร้อยแล้ว');
+        setExplanationMap(prev => ({ ...prev, [d.day]: explanation }));
         fetchData();
+        alert('ส่งคำชี้แจงเรียบร้อยแล้ว');
       } else {
         alert(result.message || 'เกิดข้อผิดพลาด');
       }
@@ -134,26 +137,9 @@ export default function EmployeeCalendarPage() {
     return hrs + mins / 60;
   }
 
-  const todayValue = new Date().setHours(0, 0, 0, 0);
-  const summary = calendarData.reduce((acc, d) => {
-    if (!d) return acc;
-    const dateVal = new Date(year, month - 1, d.day).setHours(0, 0, 0, 0);
-    if (dateVal > todayValue) return acc;
-    switch (d.type) {
-      case 'work': acc.work++; break;
-      case 'late': acc.late++; break;
-      case 'early': acc.early++; break;
-      case 'absent': acc.absent++; break;
-      case 'ot': acc.otHours += calculateOTHours(d.checkOut); break;
-      default: break;
-    }
-    return acc;
-  }, { work: 0, late: 0, early: 0, absent: 0, otHours: 0 });
-
   return (
     <div className="bg-gray-100 min-h-screen font-sans flex">
       <aside className="bg-red-600 text-white w-64 p-6 fixed h-full">
-        {/* เมนูเดิมไม่แตะ */}
         <div className="mb-6">
           <img src="https://storage.googleapis.com/be8website.appspot.com/logo-scg-white.png" alt="SCG Logo" className="w-20 mb-4" />
           <h1 className="text-xl font-semibold">SCG Employee</h1>
@@ -172,61 +158,17 @@ export default function EmployeeCalendarPage() {
       <div className="ml-64 p-6 w-full">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">ปฏิทินการทำงาน</h2>
 
-        {user && (
-          <div className="bg-white rounded-xl shadow p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
-            <div>
-              <p className="text-lg font-bold">{user.fullName}</p>
-              <p className="text-gray-600 text-sm">ตำแหน่ง: {user.position || 'ไม่ระบุ'}</p>
-              <p className="text-gray-600 text-sm">รหัสพนักงาน: {user.employeeCode || `EMP${user.id}`}</p>
-            </div>
-            <span className="mt-3 md:mt-0 inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
-              สถานะ: {user.statusText || 'ทำงานปกติ'}
-            </span>
-          </div>
-        )}
-
-        {/* เดือน/ปี เลือกอันนี้กลับมา */}
-        <div className="flex gap-4 mb-4">
-          <div>
-            <label className="text-sm text-gray-700 mr-2">เดือน:</label>
-            <select
-              value={month}
-              onChange={e => setMonth(parseInt(e.target.value))}
-              className="p-2 border rounded"
-            >
-              {[...Array(12)].map((_, i) => (
-                <option key={i} value={i + 1}>
-                  {new Date(0, i).toLocaleString('th-TH', { month: 'long' })}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="text-sm text-gray-700 mr-2">ปี:</label>
-            <select
-              value={year}
-              onChange={e => setYear(parseInt(e.target.value))}
-              className="p-2 border rounded"
-            >
-              {[2024, 2025, 2026].map(y => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* หัวตารางวัน */}
         <div className="grid grid-cols-7 gap-2 text-center text-sm font-medium mb-2">
           {['อา','จ','อ','พ','พฤ','ศ','ส'].map((d, i) => (
             <div key={i}>{d}</div>
           ))}
         </div>
 
-        {/* ตารางวัน */}
         <div className="grid grid-cols-7 gap-2 text-center">
           {calendarData.map((d, i) => {
             if (!d) return <div key={i} className="p-2 h-20 bg-gray-100 rounded" />;
             const isSelected = i === popoverIndex;
+            const hasExplanation = explanationMap[d.day];
 
             return (
               <div key={i} className="relative">
@@ -247,14 +189,25 @@ export default function EmployeeCalendarPage() {
                     </h4>
                     <p><strong>Check‑In:</strong> {d.checkIn}</p>
                     <p><strong>Check‑Out:</strong> {d.checkOut}</p>
-                    <p><strong>สถานะ:</strong> {d.type==='ot'? `${d.statusText} (${calculateOTHours(d.checkOut).toFixed(1)} ชม.)`: d.statusText}</p>
+                    <p><strong>สถานะ:</strong> {d.statusText}</p>
                     {['absent', 'late'].includes(d.type) && (
-                      <button
-                        onClick={() => handleExplanationSubmit(d)}
-                        className="mt-2 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
-                      >
-                        ส่งคำชี้แจง
-                      </button>
+                      <>
+                        {hasExplanation ? (
+                          <button
+                            onClick={() => handleExplanationSubmit(d)}
+                            className="mt-2 bg-gray-200 text-blue-600 px-3 py-1 rounded hover:bg-gray-300 text-sm flex items-center justify-center"
+                          >
+                            ✅ ส่งแล้ว <span className="ml-2">✏️</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleExplanationSubmit(d)}
+                            className="mt-2 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
+                          >
+                            ส่งคำชี้แจง
+                          </button>
+                        )}
+                      </>
                     )}
                   </div>
                 )}

@@ -99,16 +99,13 @@ export const generatePayrollByCode = async (req, res) => {
     const otRate = employee.salary / 160;
     const otAmount = totalOTHours * otRate;
 
-    console.log('📌 allRecords:', allRecords);
-    console.log('📌 workRecords:', workRecords);
-
     res.json({
       employeeCode: employee.employeeCode,
       fullName: employee.fullName,
       baseSalary: employee.salary,
       otHours: totalOTHours,
       otAmount,
-      netSalary: employee.salary - totalDeductions + otAmount,
+      netSalary: (employee.salary || 0) - totalDeductions + otAmount,
       deductions,
       month,
       year,
